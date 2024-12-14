@@ -97,6 +97,10 @@ func (r *InspectResultReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		if err != nil {
 			klog.Error(err, "failed to delete xlsx file")
 		}
+		err = os.Remove(fmt.Sprintf("%s.html", path.Join(constant.ResultPathPrefix, result.Name)))
+		if err != nil {
+			klog.Error(err, "failed to delete html file")
+		}
 		err = r.Client.Update(ctx, result)
 		if err != nil {
 			klog.Error("Failed to inspect plan add finalizers. ", err)
@@ -267,7 +271,7 @@ func (r *InspectResultReconciler) SendMessage(result *kubeeyev1alpha2.InspectRes
 	messageHandler := message.NewEmailMessageOptions(&kc.Message.Email, r.Client)
 	dispatcher := message.RegisterHandler(messageHandler)
 	dispatcher.DispatchMessageEvent(&conf.MessageEvent{
-		Title:     fmt.Sprintf("%s集群巡检完成,共发现%d个问题", result.Spec.InspectCluster.Name, n),
+		Title:     fmt.Sprintf("%s 集群巡检完成,共发现 %d 个问题", result.Spec.InspectCluster.Name, n),
 		Timestamp: time.Now(),
 		Content:   data.Bytes(),
 	})

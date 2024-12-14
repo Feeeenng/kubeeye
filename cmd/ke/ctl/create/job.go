@@ -89,7 +89,7 @@ func (o *Options) jobInspect(ctx context.Context) error {
 
 	rule, err := o.Clients.ClientSet.CoreV1().ConfigMaps(os.Getenv("KUBERNETES_POD_NAMESPACE")).List(ctx, v1.ListOptions{LabelSelector: labels.FormatLabels(map[string]string{constant.LabelInspectRuleGroup: "inspect-rule-temp"})})
 	if err != nil {
-		klog.Errorf("failed to get  inspect Rule. err:%s", err)
+		klog.Errorf("failed to get inspect Rule. err:%s", err)
 		return err
 	}
 	for _, item := range rule.Items {

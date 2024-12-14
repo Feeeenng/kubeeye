@@ -81,8 +81,9 @@ type OpaRule struct {
 	Module        string `json:"module,omitempty"`
 }
 type PrometheusRule struct {
-	RuleItemBases `json:",inline"`
-	Endpoint      string `json:"endpoint,omitempty"`
+	RuleItemBases  `json:",inline"`
+	Endpoint       string `json:"endpoint,omitempty"`
+	RawDataEnabled bool   `json:"rawDataEnabled,omitempty"`
 }
 
 type FileChangeRule struct {

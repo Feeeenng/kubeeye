@@ -5,23 +5,11 @@ apiserver:
     targetPort: 9090
   type: ClusterIP
 config:
-  config: |-
-    job:
-      autoDelTime: 30
-      backLimit: 5
-      image: kubespheredev/kubeeye-job:v1.0.2
-      imagePullPolicy: IfNotPresent
-      resources:
-        limits:
-          cpu: 1000m
-          memory: 512Mi
-        requests:
-          cpu: 50m
-          memory: 256Mi
-      multiCluster:
-        member1:
-          image: kubespheredev/kubeeye-job:v1.0.2
-          imagePullPolicy: IfNotPresent
+  job:
+    image:
+      repository: kubespheredev/kubeeye-job
+      tag: v1.0.3
+      pullPolicy: IfNotPresent
 controllerManager:
   kubeRbacProxy:
     args:
@@ -46,7 +34,7 @@ controllerManager:
       ginMode: release
     image:
       repository: kubespheredev/kubeeye-apiserver
-      tag: v1.0.2
+      tag: v1.0.3
     imagePullPolicy: IfNotPresent
     resources:
       limits:
@@ -64,7 +52,7 @@ controllerManager:
       allowPrivilegeEscalation: false
     image:
       repository: kubespheredev/kubeeye-controller
-      tag: v1.0.2
+      tag: v1.0.3
     imagePullPolicy: IfNotPresent
     resources:
       limits:
@@ -97,6 +85,13 @@ metricsService:
     protocol: TCP
     targetPort: https
   type: ClusterIP
-pvc:
-  inspectResult:
-    storageRequest: 10Gi
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+#rulesConfig:
+#  prometheus:
+#    endpoint: http://prometheus-k8s.kubesphere-monitoring-system.svc.cluster.local:9090

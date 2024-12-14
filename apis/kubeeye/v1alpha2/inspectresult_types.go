@@ -72,8 +72,10 @@ type BaseResult struct {
 }
 
 type PrometheusResult struct {
-	BaseResult `json:",inline"`
-	Result     string `json:"result,omitempty"`
+	BaseResult     `json:",inline"`
+	Result         string `json:"result,omitempty"`
+	RawDataEnabled bool   `json:"rawDataEnabled,omitempty"`
+	Rule           string `json:"rule,omitempty"`
 }
 
 type NodeInfoResultItem struct {

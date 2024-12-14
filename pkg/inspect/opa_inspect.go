@@ -3,8 +3,8 @@ package inspect
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	kubeeyev1alpha2 "github.com/kubesphere/kubeeye/apis/kubeeye/v1alpha2"
+	"github.com/kubesphere/kubeeye/pkg/collectors/opa"
 	"github.com/kubesphere/kubeeye/pkg/constant"
 	"github.com/kubesphere/kubeeye/pkg/kube"
 	"github.com/kubesphere/kubeeye/pkg/utils"
@@ -23,28 +23,57 @@ func init() {
 
 func (o *OpaInspect) RunInspect(ctx context.Context, rules []kubeeyev1alpha2.JobRule, clients *kube.KubernetesClient, currentJobName string, informers informers.SharedInformerFactory, ownerRef ...metav1.OwnerReference) ([]byte, error) {
 
-	klog.Info("getting  Rego rules")
+	klog.Info("Fetching Rego Rules")
 
 	_, exist, phase := utils.ArrayFinds(rules, func(m kubeeyev1alpha2.JobRule) bool {
 		return m.JobName == currentJobName
 	})
 
 	if exist {
-		k8sResources := kube.GetK8SResources(ctx, clients)
+		rulesManager := opa.NewRulesManager()
 
 		var opaRules []kubeeyev1alpha2.OpaRule
 		err := json.Unmarshal(phase.RunRule, &opaRules)
 		if err != nil {
-			fmt.Printf("unmarshal opaRule failed,err:%s\n", err)
+			klog.Errorf("unmarshal opaRule failed,err:%s\n", err)
 			return nil, err
 		}
-		var RegoRules []string
+
+		klog.Info("Adding Rego Rules")
+
 		for i := range opaRules {
-			RegoRules = append(RegoRules, opaRules[i].Rule)
+			err := rulesManager.AddRule(&opaRules[i])
+			if err != nil {
+				klog.Errorf("add rule failed,err:%s\n", err)
+				return nil, err
+			}
 		}
 
-		result := VailOpaRulesResult(ctx, k8sResources, RegoRules)
+		klog.Info("Fetching resources")
+
+		resourcesCollector, err := opa.NewResourceCollector(clients.KubeConfig)
+		if err != nil {
+			klog.Errorf("new resourceCollector failed,err:%s\n", err)
+			return nil, err
+		}
+
+		resourcesManager := opa.NewResourcesManager()
+
+		for key := range rulesManager.Rules {
+			err := resourcesManager.AddResource(key, resourcesCollector)
+			if err != nil {
+				klog.Errorf("add resource failed,err:%s\n", err)
+				return nil, err
+			}
+		}
+
+		klog.Info("Checking Rego Rules")
+
+		opaChecker := opa.NewOPAChecker(1000, 100)
+
+		result, err := opaChecker.VailOpaRulesResult(rulesManager, resourcesManager)
 		marshal, err := json.Marshal(result)
+
 		if err != nil {
 			klog.Error("marshal opaRule failed,err:%s\n", err)
 			return nil, err

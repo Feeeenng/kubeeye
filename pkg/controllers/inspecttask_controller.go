@@ -493,7 +493,11 @@ func saveResultFile(resultData *kubeeyev1alpha2.InspectResult, nodes *corev1.Nod
 	_, err = file.Write(marshal)
 	if err != nil {
 		klog.Error(err, "write file error")
-		return err
+	}
+	// html
+	err = output.GenerateHtml(resultData.Name)
+	if err != nil {
+		klog.Error(err, "generate html error")
 	}
 	// execl
 	err = output.GenerateExcel(resultData, nodes, pods)

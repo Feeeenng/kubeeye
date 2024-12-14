@@ -67,18 +67,17 @@ func (o *prometheusInspect) RunInspect(ctx context.Context, rules []kubeeyev1alp
 				continue
 			}
 			for _, result := range queryResults {
-
 				proRuleResult = append(proRuleResult, kubeeyev1alpha2.PrometheusResult{
-					Result: toString(result),
+					Result:         toString(result),
+					Rule:           proRule.Rule,
+					RawDataEnabled: proRule.RawDataEnabled,
 					BaseResult: kubeeyev1alpha2.BaseResult{
 						Name:   proRule.Name,
 						Assert: true,
 						Level:  proRule.Level,
 					},
 				})
-
 			}
-
 		}
 
 		marshal, err := json.Marshal(proRuleResult)

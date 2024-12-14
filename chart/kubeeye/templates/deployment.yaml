@@ -24,8 +24,7 @@ spec:
         env:
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
-        image: {{ .Values.controllerManager.kubeRbacProxy.image.repository }}:{{ .Values.controllerManager.kubeRbacProxy.image.tag
-          | default .Chart.AppVersion }}
+        image: {{ template "controllerManager.kubeRbacProxy.image" . }}
         name: kube-rbac-proxy
         ports:
         - containerPort: 8443
@@ -37,8 +36,12 @@ spec:
         env:
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
-        image: {{ .Values.controllerManager.manager.image.repository }}:{{ .Values.controllerManager.manager.image.tag
-          | default .Chart.AppVersion }}
+        - name: KUBERNETES_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: {{ template "controllerManager.manager.image" . }}
         imagePullPolicy: {{ .Values.controllerManager.manager.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -73,8 +76,12 @@ spec:
             }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
-        image: {{ .Values.controllerManager.kubeeyeApiserver.image.repository }}:{{ .Values.controllerManager.kubeeyeApiserver.image.tag
-          | default .Chart.AppVersion }}
+        - name: KUBERNETES_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: {{ template "controllerManager.kubeeyeApiserver.image" . }}
         imagePullPolicy: {{ .Values.controllerManager.kubeeyeApiserver.imagePullPolicy
           }}
         livenessProbe:
@@ -107,8 +114,12 @@ spec:
       terminationGracePeriodSeconds: 10
       volumes:
       - name: inspect-result
+        {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
           claimName: {{ include "kubeeye.fullname" . }}-inspect-result
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
       - hostPath:
           path: /etc/localtime
         name: localtime

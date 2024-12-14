@@ -5,4 +5,20 @@ metadata:
   labels:
   {{- include "kubeeye.labels" . | nindent 4 }}
 data:
-  config: {{ .Values.config.config | toYaml | indent 1 }}
+  config: |-
+    job:
+      autoDelTime: 30
+      backLimit: 5
+      image: {{ template "config.job.image" . }}
+      imagePullPolicy: {{ .Values.config.job.image.pullPolicy }}
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi
+      multiCluster:
+        member1:
+          image: {{ template "config.job.image" . }}
+          imagePullPolicy: {{ .Values.config.job.image.pullPolicy }}

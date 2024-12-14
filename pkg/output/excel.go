@@ -120,8 +120,14 @@ func GenerateExcel(resultData *kubeeyev1alpha2.InspectResult, nodes *corev1.Node
 		prometheusReults := GetPrometheus(resultData.Spec.PrometheusResult)
 		// Write the data to the sheet
 		for i, item := range prometheusReults {
-			for j, c := range item.Children {
-				f.SetCellValue(constant.Prometheus, fmt.Sprintf("%c%d", 'A'+rune(j), i+1), c.Text)
+			if i == 0 {
+				for j, c := range item.Children {
+					f.SetCellValue(constant.Prometheus, fmt.Sprintf("%c1", 'A'+rune(j)), c.Text)
+				}
+			} else {
+				for j, c := range item.Children {
+					f.SetCellValue(constant.Prometheus, fmt.Sprintf("%c%d", 'A'+rune(j), i+1), c.Text)
+				}
 			}
 		}
 	}

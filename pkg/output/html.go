@@ -1,11 +1,16 @@
 package output
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/kubesphere/kubeeye/apis/kubeeye/v1alpha2"
 	"github.com/kubesphere/kubeeye/pkg/constant"
+	"github.com/kubesphere/kubeeye/pkg/template"
 	"github.com/kubesphere/kubeeye/pkg/utils"
+	"github.com/pkg/errors"
 	"io"
+	"io/ioutil"
 	corev1 "k8s.io/api/core/v1"
 	"os"
 	"path"
@@ -125,10 +130,23 @@ func GetOpaList(result []v1alpha2.ResourceResult) (opaList []renderNode) {
 
 func GetPrometheus(pro []v1alpha2.PrometheusResult) []renderNode {
 	var prometheus []renderNode
+	header := renderNode{Header: true,
+		Children: []renderNode{
+			{Text: "name"},
+			{Text: "result"},
+		}}
+
+	prometheus = append(prometheus, header)
+
 	for _, p := range pro {
-		value := renderNode{}
-		value.Children = append(value.Children, renderNode{Text: p.Result})
-		prometheus = append(prometheus, value)
+		val := renderNode{
+			Children: []renderNode{
+				{Text: p.Name},
+				{Text: p.Result},
+			},
+		}
+
+		prometheus = append(prometheus, val)
 	}
 	return prometheus
 }
@@ -225,7 +243,6 @@ func GetSysctl(sysctlResult []v1alpha2.NodeMetricsResultItem) []renderNode {
 				}}
 			villeinage = append(villeinage, val)
 		}
-
 	}
 
 	return villeinage
@@ -421,4 +438,27 @@ func GetAbnormalPods(result *corev1.PodList) (podList []renderNode) {
 	}
 
 	return podList
+}
+
+func GenerateHtml(resultName string) error {
+	htmlTemplate, err := template.GetInspectResultHtmlTemplate()
+	if err != nil {
+		return errors.Wrap(err, "GetInspectResultHtmlTemplate error")
+
+	}
+	err, m := HtmlOut(resultName)
+	if err != nil {
+		return errors.Wrap(err, "HtmlOut error")
+	}
+	data := bytes.NewBufferString("")
+	err = htmlTemplate.Execute(data, m)
+	if err != nil {
+		return errors.Wrap(err, "render html template error")
+	}
+
+	err = ioutil.WriteFile(fmt.Sprintf("%s.html", path.Join(constant.ResultPathPrefix, resultName)), data.Bytes(), 0644)
+	if err != nil {
+		return errors.Wrap(err, "write html file error")
+	}
+	return nil
 }

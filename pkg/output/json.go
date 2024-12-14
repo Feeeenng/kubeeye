@@ -2,6 +2,7 @@ package output
 
 import (
 	"context"
+	"fmt"
 	kubeeyev1alpha2 "github.com/kubesphere/kubeeye/apis/kubeeye/v1alpha2"
 	"github.com/kubesphere/kubeeye/pkg/kube"
 	v1 "k8s.io/api/core/v1"
@@ -60,6 +61,7 @@ func ParseNodeStatus(nodes []v1.Node) map[string]int {
 
 	return nodeStatus
 }
+
 func ParseApiStatus(result *kubeeyev1alpha2.InspectResult) map[string]string {
 	apiStatus := make(map[string]string, 2)
 	for _, pro := range result.Spec.PrometheusResult {
@@ -214,4 +216,41 @@ func OverviewCount(metric map[string][]map[string]string, com []kubeeyev1alpha2.
 	}
 	count["component"] = componentCount
 	return count
+}
+
+// ParsePrometheusData merge prometheus result data
+type prometheusData struct {
+	Name    string   `json:"name"`
+	Rule    string   `json:"rule"`
+	Results []string `json:"results"`
+}
+
+func ParsePrometheusData(data *kubeeyev1alpha2.InspectResult) map[string]interface{} {
+	mergeMap := make(map[string]*prometheusData)
+
+	for _, r := range data.Spec.PrometheusResult {
+		if !r.RawDataEnabled {
+			continue
+		}
+		key := fmt.Sprintf("%s:%s", r.Name, r.Rule)
+		if result, exist := mergeMap[key]; exist {
+			result.Results = append(result.Results, r.Result)
+		} else {
+			mergeMap[key] = &prometheusData{
+				Name:    r.Name,
+				Rule:    r.Rule,
+				Results: []string{r.Result},
+			}
+		}
+	}
+
+	results := make([]prometheusData, 0, len(mergeMap))
+	for _, v := range mergeMap {
+		results = append(results, *v)
+	}
+
+	return map[string]interface{}{
+		"results": results,
+		"cluster": data.Spec.InspectCluster.Name,
+	}
 }

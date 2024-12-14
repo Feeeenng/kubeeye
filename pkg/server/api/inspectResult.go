@@ -60,9 +60,11 @@ func (i *InspectResult) ListInspectResult(gin *gin.Context) {
 		return
 	}
 	data := q.GetPageData(ret, i.compare, i.filter)
-	outType, _ := gin.GetQuery("type")
 	results := utils.MapToStruct[v1alpha2.InspectResult](data.Items.([]map[string]interface{})...)
-	if outType == "customized" {
+
+	outType, exist := gin.GetQuery("type")
+
+	if exist && outType == "prometheus" {
 		var resultCustomized []map[string]interface{}
 		for _, result := range results {
 			d, e := i.GetFileResultData(result.Name)
@@ -70,8 +72,26 @@ func (i *InspectResult) ListInspectResult(gin *gin.Context) {
 				gin.JSON(http.StatusInternalServerError, NewErrors(e.Error(), "InspectResult"))
 				return
 			}
-			resultCustomized = append(resultCustomized, output.ParseCustomizedStruct(i.Ctx, i.Clients, d))
 
+			resultCustomized = append(resultCustomized, output.ParsePrometheusData(d))
+		}
+		gin.JSON(http.StatusOK, query.Result{
+			TotalItems: len(resultCustomized),
+			Items:      resultCustomized,
+		})
+		return
+	}
+
+	if exist && outType == "customized" {
+		var resultCustomized []map[string]interface{}
+		for _, result := range results {
+			d, e := i.GetFileResultData(result.Name)
+			if e != nil {
+				gin.JSON(http.StatusInternalServerError, NewErrors(e.Error(), "InspectResult"))
+				return
+			}
+
+			resultCustomized = append(resultCustomized, output.ParseCustomizedStruct(i.Ctx, i.Clients, d))
 		}
 		gin.JSON(http.StatusOK, query.Result{
 			TotalItems: len(resultCustomized),
@@ -136,8 +156,19 @@ func (i *InspectResult) GetInspectResult(gin *gin.Context) {
 			gin.JSON(http.StatusInternalServerError, NewErrors(err.Error(), "InspectResult"))
 			return
 		}
-		customizedStruct := output.ParseCustomizedStruct(i.Ctx, i.Clients, data)
-		gin.JSON(http.StatusOK, customizedStruct)
+
+		source, exist := gin.GetQuery("source")
+		if exist && source == "prometheus" {
+			prometheusResultData := output.ParsePrometheusData(data)
+			gin.JSON(http.StatusOK, map[string]interface{}{
+				"data": prometheusResultData,
+				"code": 200,
+				"msg":  "success",
+			})
+		} else {
+			customizedStruct := output.ParseCustomizedStruct(i.Ctx, i.Clients, data)
+			gin.JSON(http.StatusOK, customizedStruct)
+		}
 
 	default:
 		result, err := i.Factory.Lister().Get(name)
