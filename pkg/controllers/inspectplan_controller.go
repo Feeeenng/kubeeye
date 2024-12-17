@@ -24,6 +24,7 @@ import (
 	"github.com/kubesphere/kubeeye/pkg/kube"
 	"github.com/kubesphere/kubeeye/pkg/utils"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog/v2"
 	"sort"
 	"strconv"
@@ -183,6 +184,9 @@ func (r *InspectPlanReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 
 		plan.Status.NextScheduleTime = &metav1.Time{Time: schedule.Next(now)}
+
+		r.cleanTask(ctx, plan)
+
 		r.Status().Patch(ctx, plan, client.MergeFrom(plan))
 		if err = r.updateStatus(ctx, plan, now, taskName); err != nil {
 			return ctrl.Result{}, err
@@ -266,13 +270,13 @@ func (r *InspectPlanReconciler) createInspectTask(plan *kubeeyev1alpha2.InspectP
 		return "", err
 	}
 	klog.Info("create a new inspect task.", inspectTask.Name)
-	r.removeTask(ctx, plan)
+
 	return inspectTask.Name, nil
 }
 
-func (r *InspectPlanReconciler) removeTask(ctx context.Context, plan *kubeeyev1alpha2.InspectPlan) {
+func (r *InspectPlanReconciler) cleanTask(ctx context.Context, plan *kubeeyev1alpha2.InspectPlan) {
 	if plan.Spec.MaxTasks > 0 {
-		tasks, err := r.getInspectTaskForLabel(plan.Name)
+		tasks, err := r.getInspectTaskForLabel(ctx, plan.Name)
 		if err != nil {
 			klog.Error("Failed to get inspect task for label", err)
 		}
@@ -306,7 +310,12 @@ func (r *InspectPlanReconciler) updateStatus(ctx context.Context, plan *kubeeyev
 	return nil
 }
 
-func (r *InspectPlanReconciler) getInspectTaskForLabel(planName string) ([]*kubeeyev1alpha2.InspectTask, error) {
+func (r *InspectPlanReconciler) getInspectTaskForLabel(ctx context.Context, planName string) ([]*kubeeyev1alpha2.InspectTask, error) {
+	time.Sleep(time.Second)
+	if !cache.WaitForCacheSync(ctx.Done(), r.KubeEyeFactory.V1alpha2().InspectTasks().Informer().HasSynced) {
+		return nil, fmt.Errorf("failed to wait for caches to sync")
+	}
+
 	list, err := r.KubeEyeFactory.V1alpha2().InspectTasks().Lister().List(labels.SelectorFromSet(map[string]string{constant.LabelPlanName: planName}))
 
 	if err != nil {
