@@ -3,7 +3,7 @@
 apiVersion: kubeeye.kubesphere.io/v1alpha2
 kind: InspectRule
 metadata:
-  name: inspect-rule-prometheus
+  name: promql-inspect-rules
 spec:
   prometheusEndpoint: http://prometheus-k8s.kubesphere-monitoring-system.svc.cluster.local:9090
   prometheus:

@@ -17,7 +17,7 @@ KubeEye 是为 Kubernetes 设计的云原生集群巡检工具，用于根据自
 可从 [Releases](https://github.com/kubesphere/kubeeye/releases) 中下载安装包（其中包含helm chart，demo rules 以及 供离线环境部署的镜像）
 
 ```shell
-VERSION=v1.0.0
+VERSION=v1.0.3
 
 wget https://github.com/kubesphere/kubeeye/releases/download/${VERSION}/kubeeye-offline-${VERSION}.tar.gz
 
@@ -35,12 +35,12 @@ helm upgrade --install kubeeye chart/kubeeye -n kubeeye-system --create-namespac
 
 #### 导入规则
    
-> 安装包中的rule目录下提供了demo规则，可根据需求自定义规则。
+> 安装包中的 rules 目录下提供了 demo 规则，可根据需求自定义规则。
 
-> 注意 prometheus 规则需提前为规则设置prometheus的endpoint。
+> 注意 promql 规则需提前为规则设置 prometheus 的 endpoint。
 
 ```shell
-kubectl apply -f rule
+kubectl apply -f rules
 ```
 
 #### 创建巡检计划
@@ -55,7 +55,7 @@ metadata:
 spec:
   # 需要执行检查的计划时间，仅支持cron表达式，例："*/30 * * * ?"表示每30分钟执行一次巡检。
   # 如果仅需单次巡检，则将该参数移除。
-  schedule: "*/30 * * * ?"
+  schedule: "* */12 * * ?"
   # 巡检结果最大保留数量，不填写则是保留全部
   maxTasks: 10 
   # 是否暂停巡检计划, 仅作用于周期巡检，true 或 flase （默认false）
@@ -65,15 +65,15 @@ spec:
   # 巡检规则列表，用于关联对应的巡检规则，填写 inspectRule 名称
   # 可通过 kubectl get inspectrule 查看集群中巡检规则
   ruleNames:
-    - name: inspect-rule-filter-file
-    - name: inspect-rule-node-info
-    - name: inspect-rule-node
-    - name: inspect-rule-sbnormalpodstatus 
-    - name: inspect-rule-deployment
-    - name: inspect-rule-sysctl
-    - name: inspect-rule-prometheus
-    - name: inspect-rule-filechange
-    - name: inspect-rule-systemd
+  - name: configmap-inspect-rules
+  - name: cronjob-inspect-rules
+  - name: daemonset-inspect-rules
+  - name: deployment-inspect-rules
+  - name: event-inspect-rules
+  - name: job-inspect-rules
+  - name: node-inspect-rules
+  - name: pod-inspect-rules
+  - name: pod-state-inspect-rules
   # nodeName: master
   # nodeSelector:
   #   node-role.kubernetes.io/master: ""        

@@ -17,7 +17,7 @@ KubeEye is a cloud-native cluster inspection tool specifically designed for Kube
 Download the installation package from [Releases](https://github.com/kubesphere/kubeeye/releases), which includes Helm chart, demo rules, and images for offline installation.
 
 ```shell
-VERSION=v1.0.0
+VERSION=v1.0.3
 
 wget https://github.com/kubesphere/kubeeye/releases/download/${VERSION}/kubeeye-offline-${VERSION}.tar.gz
 
@@ -35,12 +35,12 @@ helm upgrade --install kubeeye chart/kubeeye -n kubeeye-system --create-namespac
 
 #### Import Inspect Rules
    
-> The `rule` directory in the installation package provides demo rules, which can be customized according to specific needs.
+> The `rules` directory in the installation package provides demo rules, which can be customized according to specific needs.
 
-> Notice： Prometheus rules need to have the endpoint of Prometheus set in advance.
+> Notice： PromQL rules need to have the endpoint of Prometheus set in advance.
 
 ```shell
-kubectl apply -f rule
+kubectl apply -f rules
 ```
 
 #### Create Inspect Plan
@@ -55,7 +55,7 @@ metadata:
 spec:
   # The planned time for executing inspections only supports cron expressions. For example, '*/30 * * * ?' means that the inspection will be performed every 30 minutes.'
   # If only a single inspection is required, then remove this parameter.
-  schedule: "*/30 * * * ?"
+  schedule: "* */12 * * ?"
   # The maximum number of retained inspection results, if not filled in, will retain all.
   maxTasks: 10 
   # Should the inspection plan be paused, applicable only to periodic inspections, true or false (default is false).
@@ -65,15 +65,15 @@ spec:
   # Inspection rule list, used to associate corresponding inspection rules, please fill in the inspectRule name.
   # Execute `kubectl get inspectrule` to view the inspection rules in the cluster.
   ruleNames:
-    - name: inspect-rule-filter-file
-    - name: inspect-rule-node-info
-    - name: inspect-rule-node
-    - name: inspect-rule-sbnormalpodstatus 
-    - name: inspect-rule-deployment
-    - name: inspect-rule-sysctl
-    - name: inspect-rule-prometheus
-    - name: inspect-rule-filechange
-    - name: inspect-rule-systemd
+  - name: configmap-inspect-rules
+  - name: cronjob-inspect-rules
+  - name: daemonset-inspect-rules
+  - name: deployment-inspect-rules
+  - name: event-inspect-rules
+  - name: job-inspect-rules
+  - name: node-inspect-rules
+  - name: pod-inspect-rules
+  - name: pod-state-inspect-rules
   # nodeName: master
   # nodeSelector:
   #   node-role.kubernetes.io/master: ""        

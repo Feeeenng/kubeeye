@@ -177,20 +177,31 @@ func (r *InspectPlanReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	now := time.Now()
 	scheduledTime := nextScheduledTimeDuration(schedule, plan.Status.LastScheduleTime)
 	if plan.Status.LastScheduleTime == nil || plan.Status.LastScheduleTime.Add(*scheduledTime).Before(now) {
+		oldPlan := plan.DeepCopy()
+
 		taskName, err := r.createInspectTask(plan, ctx)
 		if err != nil {
 			klog.Error("failed to create InspectTask.", err)
 			return ctrl.Result{}, err
 		}
 
-		plan.Status.NextScheduleTime = &metav1.Time{Time: schedule.Next(now)}
+		plan.Status.TaskNames = append(plan.Status.TaskNames, kubeeyev1alpha2.TaskNames{
+			Name:       taskName,
+			TaskStatus: kubeeyev1alpha2.PhasePending,
+		})
 
 		r.cleanTask(ctx, plan)
 
-		r.Status().Patch(ctx, plan, client.MergeFrom(plan))
-		if err = r.updateStatus(ctx, plan, now, taskName); err != nil {
+		plan.Status.NextScheduleTime = &metav1.Time{Time: schedule.Next(now)}
+		plan.Status.LastScheduleTime = &metav1.Time{Time: now}
+		plan.Status.LastTaskName = taskName
+		plan.Status.LastTaskStatus = kubeeyev1alpha2.PhasePending
+
+		if err := r.Status().Patch(ctx, plan, client.MergeFrom(oldPlan)); err != nil {
+			klog.Error("failed to patch inspect plan status: ", err)
 			return ctrl.Result{}, err
 		}
+
 		return ctrl.Result{RequeueAfter: 3 * time.Second}, nil
 	} else {
 		nextScheduledTime := nextScheduledTimeDuration(schedule, &metav1.Time{Time: now})
@@ -291,7 +302,6 @@ func (r *InspectPlanReconciler) cleanTask(ctx context.Context, plan *kubeeyev1al
 			}
 			plan.Status.TaskNames = ConvertTaskStatus(tasks[len(tasks)-plan.Spec.MaxTasks:])
 		}
-
 	}
 }
 func (r *InspectPlanReconciler) updateStatus(ctx context.Context, plan *kubeeyev1alpha2.InspectPlan, now time.Time, taskName string) error {
@@ -353,7 +363,7 @@ func (r *InspectPlanReconciler) updateAddRuleReferNum(ctx context.Context, ruleN
 	for _, v := range ruleNames {
 		rule, err := r.KubeEyeFactory.V1alpha2().InspectRules().Lister().Get(v.Name)
 		if err != nil {
-			klog.Error(err, "Failed to get inspectRules")
+			klog.Error(err, " Failed to get inspectRules")
 			continue
 		}
 		rule.Labels = utils.MergeMap(rule.Labels, map[string]string{fmt.Sprintf("%s/%s", "kubeeye.kubesphere.io", plan.Name): plan.Name})
@@ -386,7 +396,7 @@ func (r *InspectPlanReconciler) updateSubRuleReferNum(ctx context.Context, ruleN
 	for _, v := range ruleNames {
 		rule, err := r.KubeEyeFactory.V1alpha2().InspectRules().Lister().Get(v.Name)
 		if err != nil {
-			klog.Error(err, "Failed to get inspectRules")
+			klog.Error(err, " Failed to get inspectRules")
 			continue
 		}
 		delete(rule.Labels, fmt.Sprintf("%s/%s", "kubeeye.kubesphere.io", plan.Name))

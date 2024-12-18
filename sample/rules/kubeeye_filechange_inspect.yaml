@@ -3,7 +3,7 @@
 apiVersion: kubeeye.kubesphere.io/v1alpha2
 kind: InspectRule
 metadata:
-  name: inspect-rule-filechange
+  name: filechange-inspect-rules
 spec:
   fileChange:
     - name: kubelet-config

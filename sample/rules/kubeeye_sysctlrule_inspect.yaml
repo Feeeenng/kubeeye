@@ -3,7 +3,7 @@
 apiVersion: kubeeye.kubesphere.io/v1alpha2
 kind: InspectRule
 metadata:
-  name: inspect-rule-sysctl
+  name: sysctl-inspect-rules
 spec:
   sysctl:
     - name: net.ipv4.ip_forward
