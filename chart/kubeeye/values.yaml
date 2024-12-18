@@ -1,3 +1,6 @@
+global:
+  imageRegistry: docker.io
+
 apiserver:
   ports:
   - port: 9090
@@ -92,6 +95,3 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
 
-#rulesConfig:
-#  prometheus:
-#    endpoint: http://prometheus-k8s.kubesphere-monitoring-system.svc.cluster.local:9090

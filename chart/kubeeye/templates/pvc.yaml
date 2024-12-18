@@ -2,6 +2,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  annotations:
+    "helm.sh/resource-policy": keep
   name: {{ include "kubeeye.fullname" . }}-inspect-result
   labels:
   {{- include "kubeeye.labels" . | nindent 4 }}

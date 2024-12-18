@@ -1,16 +1,11 @@
+# Description: This is a sample file for creating a PromQL InspectRule.
+---
 apiVersion: kubeeye.kubesphere.io/v1alpha2
 kind: InspectRule
 metadata:
-  labels:
-    app.kubernetes.io/name: inspectrule
-    app.kubernetes.io/instance: inspectrule-sample
-    app.kubernetes.io/part-of: kubeeye
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: kubeeye
-    kubeeye.kubesphere.io/rule-group: kubeeye_workloads_rego
   name: inspect-rule-prometheus
 spec:
-  prometheusEndpoint: http://whizard-agent-proxy.kubesphere-monitoring-system.svc.cluster.local:9090
+  prometheusEndpoint: http://prometheus-k8s.kubesphere-monitoring-system.svc.cluster.local:9090
   prometheus:
     - name: filesystem-less-20
       desc: Filesystem inode where less 20 %

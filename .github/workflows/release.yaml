@@ -108,7 +108,7 @@ jobs:
         run: |
           mkdir -p kubeeye-offline-${{ github.ref_name }}/images
           cp -r chart kubeeye-offline-${{ github.ref_name }}
-          cp -r deploy/rule kubeeye-offline-${{ github.ref_name }}
+          cp -r sample/rules kubeeye-offline-${{ github.ref_name }}
           docker save -o kubeeye-offline-${{ github.ref_name }}/images/kubeeye-apiserver.tar kubespheredev/kubeeye-apiserver:${{ github.ref_name }}
           docker save -o kubeeye-offline-${{ github.ref_name }}/images/kubeeye-controller.tar kubespheredev/kubeeye-controller:${{ github.ref_name }}
           docker save -o kubeeye-offline-${{ github.ref_name }}/images/kubeeye-job.tar kubespheredev/kubeeye-job:${{ github.ref_name }}

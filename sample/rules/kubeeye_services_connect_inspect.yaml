@@ -1,3 +1,5 @@
+# Description: The rules for inspecting Services.
+---
 apiVersion: kubeeye.kubesphere.io/v1alpha2
 kind: InspectRule
 metadata:
