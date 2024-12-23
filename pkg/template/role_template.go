@@ -35,7 +35,7 @@ func GetClusterRoleTemplate() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{"rbac.authorization.k8s.io"},
-				Resources: []string{"roles", "clusterroles"},
+				Resources: []string{"roles", "clusterroles", "rolebindings", "clusterrolebindings"},
 				Verbs:     []string{"list", "get", "watch"},
 			},
 		},
