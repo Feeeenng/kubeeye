@@ -49,11 +49,23 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
            
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
+
+        not excluded_namespaces[input.metadata.namespace]
         
         level := "WARNING"
 
@@ -76,12 +88,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -103,12 +125,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"
 
         container := input.spec.jobTemplate.spec.template.spec.containers[_]
@@ -136,12 +168,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"
 
         input.spec.jobTemplate.spec.template.spec.containers[_].securityContext.privileged == true
@@ -160,12 +202,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
 
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
 
         insecureCapabilities := ["CHOWN", "DAC_OVERRIDE", "FSETID", "FOWNER", "MKNOD", "NET_RAW", "SETGID", "SETUID", "SETFCAP", "NET_BIND_SERVICE","SYS_CHROOT","KILL","AUDIT_WRITE"]
@@ -187,12 +239,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"
         
         HighRiskCapabilities := ["NET_ADMIN", "SYS_ADMIN", "ALL"]
@@ -264,12 +326,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-        
+        not excluded_namespaces[input.metadata.namespace]      
         level := "WARNING"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -291,12 +363,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -318,12 +400,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
         
         not input.metadata.namespace == "kubeeye-system"
@@ -346,12 +438,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -372,12 +474,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -398,12 +510,24 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
+
+      }
 
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
 
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
 
         not input.metadata.namespace == "kubeeye-system"
@@ -424,11 +548,23 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "CronJob"
         input.apiVersion == "batch/v1"
+
+        not excluded_namespaces[input.metadata.namespace]
 
         level := "WARNING"
         
