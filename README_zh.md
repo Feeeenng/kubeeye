@@ -106,7 +106,7 @@ curl http://<svc-ip>:9090/kapis/kubeeye.kubesphere.io/v1alpha2/inspectresults/<r
 ###### 浏览器查看
 ```shell
 ## 为 kubeeye-apiserver 创建 nodePort 类型svc
-kubectl -n kubeeye-system expose svc kubeeye-apiserver --port=9090 --type=NodePort --name=ke-apiserver-node-port
+kubectl -n kubeeye-system expose deploy  kubeeye-controller-manager --port=9090 --type=NodePort --name=ke-apiserver-node-port
 
 ## 浏览器输入巡检报告url查看, 注意替换 <> 为环境中查询到的实际信息
 http://<node address>:<node port>/kapis/kubeeye.kubesphere.io/v1alpha2/inspectresults/<result name>?type=html
