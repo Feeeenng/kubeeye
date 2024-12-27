@@ -10,12 +10,24 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
           
         input.kind == "DaemonSet"
         input.apiVersion == "apps/v1"
-    
+
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
 
         container := input.spec.template.spec.containers[_]
