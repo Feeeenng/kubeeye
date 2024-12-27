@@ -1,5 +1,5 @@
 global:
-  imageRegistry: docker.io
+  imageRegistry: registry.cn-shenzhen.aliyuncs.com/os_mirror
 
 apiserver:
   ports:
@@ -10,7 +10,7 @@ apiserver:
 config:
   job:
     image:
-      repository: kubespheredev/kubeeye-job
+      repository: kubespheredev.kubeeye-job
       tag: v1.0.3
       pullPolicy: IfNotPresent
 controllerManager:
@@ -21,7 +21,7 @@ controllerManager:
     - --logtostderr=true
     - --v=0
     image:
-      repository: kubesphere/kube-rbac-proxy
+      repository: kubesphere.kube-rbac-proxy
       tag: v0.11.0
     resources:
       limits:
@@ -36,7 +36,7 @@ controllerManager:
       disableSystemComponent: "true"
       ginMode: release
     image:
-      repository: kubespheredev/kubeeye-apiserver
+      repository: kubespheredev.kubeeye-apiserver
       tag: v1.0.3
     imagePullPolicy: IfNotPresent
     resources:
@@ -54,7 +54,7 @@ controllerManager:
     containerSecurityContext:
       allowPrivilegeEscalation: false
     image:
-      repository: kubespheredev/kubeeye-controller
+      repository: kubespheredev.kubeeye-controller
       tag: v1.0.3
     imagePullPolicy: IfNotPresent
     resources:
