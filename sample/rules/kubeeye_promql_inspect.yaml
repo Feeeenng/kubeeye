@@ -43,3 +43,7 @@ spec:
     - name: KubeClientErrors
       rule: (sum by(instance, job, namespace) (rate(rest_client_requests_total{code=~"5.."}[5m])) / sum by(instance, job, namespace) (rate(rest_client_requests_total[5m]))) > 0.01
       desc: Kubernetes API server client is experiencing errors.
+    - name: KubeApiCertExpirtion
+      rule: apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0 and on(job) histogram_quantile(0.01, sum by (job, le) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 7776000
+      desc: check Kuberentes Api Certs Expirtion < 90d
+
