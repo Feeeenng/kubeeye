@@ -49,12 +49,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
           
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -77,11 +87,21 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -103,12 +123,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
 
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"
 
         not input.metadata.ownerReferences
@@ -138,12 +168,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"
         
         not input.metadata.ownerReferences
@@ -164,12 +204,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
         
         not input.metadata.ownerReferences
@@ -193,12 +243,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-        
+        not excluded_namespaces[input.metadata.namespace]
         level := "DANGER"  
         
         not input.metadata.ownerReferences
@@ -222,12 +282,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
 
         input.kind == "Pod"
         input.apiVersion == "v1"
-        
+        not excluded_namespaces[input.metadata.namespace]       
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -249,12 +319,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -276,12 +356,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -303,12 +393,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
 
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
@@ -330,12 +430,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
 
         not input.metadata.ownerReferences
@@ -358,12 +468,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
         not input.metadata.ownerReferences
 
@@ -383,12 +503,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
         
         not input.metadata.ownerReferences
@@ -409,12 +539,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "CRITICAL"
         not input.metadata.ownerReferences
 
@@ -434,12 +574,22 @@ spec:
     rule: |-
       package inspect.kubeeye
       import rego.v1
+      excluded_namespaces := {
+           "kube-system",
+           "argocd",
+           "kubeeye-system",
+           "kubesphere-system",
+           "kubesphere-monitoring-system",
+           "kubesphere-controls-system",
+           "kubesphere-logging-system",
+           "kubesphere-devops-system"
 
+      }
       deny contains msg if {
         
         input.kind == "Pod"
         input.apiVersion == "v1"
-
+        not excluded_namespaces[input.metadata.namespace]
         level := "WARNING"
         
         not input.metadata.ownerReferences
